@@ -6,6 +6,7 @@ de detecção mora aqui.
 """
 from __future__ import annotations
 
+import os
 import sys
 import tempfile
 from pathlib import Path
@@ -23,15 +24,20 @@ from ghostscan import scan_pdf, Config  # noqa: E402
 
 MAX_UPLOAD_BYTES = 50 * 1024 * 1024  # 50 MB — peça processual razoável
 
+# Origens permitidas: configurável por env (vírgula-separada) para deploy.
+# Default cobre o dev local; em prod, setar ALLOWED_ORIGINS no Railway.
+_default_origins = "http://localhost:5173,http://127.0.0.1:5173"
+ALLOWED_ORIGINS = [
+    o.strip() for o in os.environ.get("ALLOWED_ORIGINS", _default_origins).split(",")
+    if o.strip()
+]
+
 
 app = FastAPI(title="GhostScan API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=ALLOWED_ORIGINS,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )

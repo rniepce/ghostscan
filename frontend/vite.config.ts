@@ -12,4 +12,9 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    // Railway atribui um domínio público dinâmico; aceitamos qualquer host
+    // já que a autorização real fica no CORS do backend.
+    allowedHosts: true,
+  },
 });
